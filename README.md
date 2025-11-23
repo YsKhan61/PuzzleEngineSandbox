@@ -1,7 +1,7 @@
 # Puzzle Engine Sandbox
 A modular, DOTS-accelerated puzzle simulation framework for Unity.
 
-[![Unity](https://img.shields.io/badge/Unity-2022.3_LTS-black)]()
+[![Unity](https://img.shields.io/badge/Unity-6000.0.62f1_LTS-black)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
 
 ---
@@ -123,7 +123,7 @@ Assets/
 
 ## Tech Stack
 
-- Unity 2022.3 LTS
+- Unity 6000.0.61f1 LTS
 - C# (SOLID, clean architecture)
 - Unity DOTS (Entities, Burst, Jobs)
 - ScriptableObjects for content-driven rules
@@ -197,4 +197,4 @@ MIT License
 **Yash Sadhukhan**  
 Unity Gameplay Programmer  
 Email: yskhan61@gmail.com  
-LinkedIn / Portfolio link to be added here
+LinkedIn / Portfolio [link to be added here](https://www.linkedin.com/in/yskhan61/)
