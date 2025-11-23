@@ -197,4 +197,4 @@ MIT License
 **Yash Sadhukhan**  
 Unity Gameplay Programmer  
 Email: yskhan61@gmail.com  
-LinkedIn / Portfolio [link to be added here](https://www.linkedin.com/in/yskhan61/)
+LinkedIn / Portfolio [Click here](https://www.linkedin.com/in/yskhan61/)
