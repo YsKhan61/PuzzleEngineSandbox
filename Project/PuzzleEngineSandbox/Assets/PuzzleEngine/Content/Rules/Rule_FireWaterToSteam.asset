@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c99ccd776044d1cb85358707b1721e8, type: 3}
+  m_Name: Rule_FireWaterToSteam
+  m_EditorClassIdentifier: 
+  tileA: {fileID: 11400000, guid: fada1d39ee66ed44b8c57020c6afe76d, type: 2}
+  tileB: {fileID: 11400000, guid: 0c8939d8549650040904795cb33a73ca, type: 2}
+  unordered: 1
+  resultMode: 0
+  resultType: {fileID: 11400000, guid: 31161ea9bcc09ee4b9245fc27363bebc, type: 2}
+  isMergeRule: 0
+  levelDelta: 1
+  fixedResultLevel: 1
