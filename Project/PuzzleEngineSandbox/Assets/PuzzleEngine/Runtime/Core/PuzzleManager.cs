@@ -1,8 +1,8 @@
-using PuzzleEngine.Rules;
+using PuzzleEngine.Runtime.Rules;
 using UnityEngine;
-using PuzzleEngine.Simulation;
+using PuzzleEngine.Runtime.Simulation;
 
-namespace PuzzleEngine.Core
+namespace PuzzleEngine.Runtime.Core
 {
     /// <summary>
     /// MonoBehaviour façade over the core puzzle systems.
@@ -11,15 +11,14 @@ namespace PuzzleEngine.Core
     [DisallowMultipleComponent]
     public class PuzzleManager : MonoBehaviour
     {
-        [Header("Grid Config")]
-        [SerializeField] private GridConfigSO gridConfig;
+        [Header("Grid Config")] [SerializeField]
+        private GridConfigSO gridConfig;
 
-        [Header("Content")]
-        [Tooltip("Registry of all tile types used in this puzzle set.")]
-        [SerializeField] private TileDatabaseSO tileDatabase;
+        [Header("Content")] [Tooltip("Registry of all tile types used in this puzzle set.")] [SerializeField]
+        private TileDatabaseSO tileDatabase;
 
-        [Tooltip("Set of interaction rules (merge/combine) used by this puzzle.")]
-        [SerializeField] private RuleSetSO ruleSet;
+        [Tooltip("Set of interaction rules (merge/combine) used by this puzzle.")] [SerializeField]
+        private RuleSetSO ruleSet;
 
         /// <summary>Runtime grid model – single source of truth for tiles.</summary>
         public GridModel Grid { get; private set; }
@@ -41,12 +40,12 @@ namespace PuzzleEngine.Core
 
         private void EnsureGridConfig()
         {
-            if (gridConfig != null) 
+            if (gridConfig != null)
                 return;
 
             Debug.LogError("[PuzzleManager] GridConfigSO is not assigned. Creating a default one in-memory.", this);
             gridConfig = ScriptableObject.CreateInstance<GridConfigSO>();
-            gridConfig.width  = 6;
+            gridConfig.width = 6;
             gridConfig.height = 6;
         }
 
@@ -66,7 +65,7 @@ namespace PuzzleEngine.Core
             }
 
             RuleEngine = new RuleEngine(tileDatabase, ruleSet);
-            Simulator  = new GridSimulator(RuleEngine);
+            Simulator = new GridSimulator(RuleEngine);
 
             Debug.Log("[PuzzleManager] RuleEngine and GridSimulator initialized.", this);
         }
@@ -167,5 +166,14 @@ namespace PuzzleEngine.Core
         }
 
         #endregion
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Debug-only accessors used by editor gizmos.
+        /// </summary>
+        public GridConfigSO GetGridConfigForDebug() => gridConfig;
+
+        public TileDatabaseSO GetTileDatabaseForDebug() => tileDatabase;
+#endif
     }
 }

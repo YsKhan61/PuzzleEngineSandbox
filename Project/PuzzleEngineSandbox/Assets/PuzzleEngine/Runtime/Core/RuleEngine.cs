@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using PuzzleEngine.Core;
+using PuzzleEngine.Runtime.Rules;
 using UnityEngine;
 
-namespace PuzzleEngine.Rules
+namespace PuzzleEngine.Runtime.Core
 {
     /// <summary>
     /// Runtime rule lookup and application.

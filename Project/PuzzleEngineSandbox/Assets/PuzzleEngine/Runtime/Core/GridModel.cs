@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PuzzleEngine.Core
+namespace PuzzleEngine.Runtime.Core
 {
     /// <summary>
     /// Pure in-memory 2D grid of TileData.

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PuzzleEngine.Core
+namespace PuzzleEngine.Runtime.Core
 {
     /// <summary>
     /// Scriptable configuration for grid dimensions (and later, global puzzle settings).

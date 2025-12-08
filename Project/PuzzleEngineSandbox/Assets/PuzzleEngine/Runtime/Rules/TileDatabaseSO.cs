@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PuzzleEngine.Rules
+namespace PuzzleEngine.Runtime.Rules
 {
     /// <summary>
     /// Central registry of all TileTypeSO assets used by the puzzle engine.
@@ -18,6 +18,13 @@ namespace PuzzleEngine.Rules
         /// </summary>
         public IReadOnlyList<TileTypeSO> TileTypes => tileTypes;
 
+#if UNITY_EDITOR || UNITY_INCLUDE_TESTS
+        public void SetTileTypesForTests(System.Collections.Generic.List<TileTypeSO> types)
+        {
+            tileTypes = types;
+        }
+#endif
+        
 #if UNITY_EDITOR
         private void OnValidate()
         {

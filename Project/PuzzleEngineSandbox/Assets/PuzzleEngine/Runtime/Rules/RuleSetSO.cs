@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace PuzzleEngine.Rules
+namespace PuzzleEngine.Runtime.Rules
 {
     /// <summary>
     /// Set of interaction rules used by the puzzle engine.
@@ -14,5 +14,13 @@ namespace PuzzleEngine.Rules
         private List<InteractionRuleSO> rules = new List<InteractionRuleSO>();
 
         public IReadOnlyList<InteractionRuleSO> Rules => rules;
+        
+#if UNITY_EDITOR || UNITY_INCLUDE_TESTS
+        public void SetRulesForTests(List<InteractionRuleSO> list)
+        {
+            rules = list;
+        }
+#endif
+
     }
 }

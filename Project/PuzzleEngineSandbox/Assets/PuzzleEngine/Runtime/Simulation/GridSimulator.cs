@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using PuzzleEngine.Core;
-using PuzzleEngine.Rules;
+using PuzzleEngine.Runtime.Core;
 
-namespace PuzzleEngine.Simulation
+namespace PuzzleEngine.Runtime.Simulation
 {
     /// <summary>
     /// Deterministic, single-step grid simulator.

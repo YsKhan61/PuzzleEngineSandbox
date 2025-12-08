@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PuzzleEngine.Rules
+namespace PuzzleEngine.Runtime.Rules
 {
     /// <summary>
     /// Scriptable definition of a binary interaction rule:
