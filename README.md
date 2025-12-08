@@ -3,6 +3,9 @@ A modular, DOTS-accelerated puzzle simulation framework for Unity.
 
 [![Unity](https://img.shields.io/badge/Unity-6000.0.62f1_LTS-black)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
+[![Unity WebGL CI](https://github.com/YsKhan61/PuzzleEngineSandbox/actions/workflows/unity-webgl-ci.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/unity-webgl-ci.yml)
+[![CodeQL](https://github.com/YsKhan61/PuzzleEngineSandbox/actions/workflows/codeql.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/codeql.yml)
+
 
 ---
 
