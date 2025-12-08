@@ -18,6 +18,13 @@ namespace PuzzleEngine.Rules
         /// </summary>
         public IReadOnlyList<TileTypeSO> TileTypes => tileTypes;
 
+#if UNITY_EDITOR || UNITY_INCLUDE_TESTS
+        public void SetTileTypesForTests(System.Collections.Generic.List<TileTypeSO> types)
+        {
+            tileTypes = types;
+        }
+#endif
+        
 #if UNITY_EDITOR
         private void OnValidate()
         {
