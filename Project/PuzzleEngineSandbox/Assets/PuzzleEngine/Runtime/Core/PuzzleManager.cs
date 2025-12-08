@@ -1,8 +1,8 @@
-using PuzzleEngine.Rules;
+using PuzzleEngine.Runtime.Rules;
 using UnityEngine;
-using PuzzleEngine.Simulation;
+using PuzzleEngine.Runtime.Simulation;
 
-namespace PuzzleEngine.Core
+namespace PuzzleEngine.Runtime.Core
 {
     /// <summary>
     /// MonoBehaviour façade over the core puzzle systems.

@@ -1,10 +1,10 @@
+using PuzzleEngine.Runtime.Core;
 using UnityEngine;
-using PuzzleEngine.Core;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace PuzzleEngine.Debugs
+namespace PuzzleEngine.Runtime.Debugs
 {
     [DisallowMultipleComponent]
     public class GridGizmoRenderer : MonoBehaviour

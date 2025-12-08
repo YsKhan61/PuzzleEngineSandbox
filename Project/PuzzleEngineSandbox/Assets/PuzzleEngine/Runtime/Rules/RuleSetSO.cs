@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace PuzzleEngine.Rules
+namespace PuzzleEngine.Runtime.Rules
 {
     /// <summary>
     /// Set of interaction rules used by the puzzle engine.

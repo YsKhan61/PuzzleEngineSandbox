@@ -1,4 +1,4 @@
-﻿namespace PuzzleEngine.Core
+﻿namespace PuzzleEngine.Runtime.Core
 {
     /// <summary>
     /// Lightweight value-type representation of a single tile on the grid.

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using PuzzleEngine.Core;
-using PuzzleEngine.Rules;
+using PuzzleEngine.Runtime.Core;
+using PuzzleEngine.Runtime.Rules;
 using UnityEngine;
 
-namespace PuzzleEngine.Tests
+namespace PuzzleEngine.Tests.Editmode
 {
     public class RuleEngineMergeTests
     {

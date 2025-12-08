@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PuzzleEngine.Rules
+namespace PuzzleEngine.Runtime.Rules
 {
     /// <summary>
     /// Central registry of all TileTypeSO assets used by the puzzle engine.

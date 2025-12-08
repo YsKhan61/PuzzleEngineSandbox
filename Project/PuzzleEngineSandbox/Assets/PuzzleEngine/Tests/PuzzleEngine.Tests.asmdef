@@ -1,0 +1,16 @@
+{
+    "name": "PuzzleEngine.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f482082700c75c241971cea471fceea4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
