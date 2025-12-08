@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 3 * * 0'  # weekly
+    - cron: '0 3 * * 0'
 
 jobs:
   analyze:
@@ -31,9 +31,10 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+          # Unity project – we skip build and still run source analysis
+          build-mode: none
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+      # ❌ remove the autobuild step completely
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
