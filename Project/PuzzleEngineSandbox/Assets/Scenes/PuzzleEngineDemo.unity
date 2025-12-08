@@ -350,6 +350,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1162303597}
   - component: {fileID: 1162303598}
+  - component: {fileID: 1162303599}
   m_Layer: 0
   m_Name: PuzzleManager
   m_TagString: Untagged
@@ -387,6 +388,24 @@ MonoBehaviour:
   gridConfig: {fileID: 11400000, guid: 78d3a68a31c314642a000366429ba256, type: 2}
   tileDatabase: {fileID: 11400000, guid: e1e25b7e9b1a27649994f9896e860cfa, type: 2}
   ruleSet: {fileID: 11400000, guid: 0c7fc4cfaea07854d8830d536124c44c, type: 2}
+--- !u!114 &1162303599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162303596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 523c111b04de0cf48a7bbe98b4143b71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drawGrid: 1
+  drawTiles: 1
+  cellSize: 1
+  origin: {x: 1, y: 1}
+  drawLabels: 1
+  emptyColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
