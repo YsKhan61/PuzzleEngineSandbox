@@ -21,6 +21,13 @@ namespace PuzzleEngine.Runtime.Core
 
         [Tooltip("Set of interaction rules (merge/combine) used by this puzzle.")]
         [SerializeField] private RuleSetSO ruleSet;
+        
+        [Header("Level")]
+        [Tooltip("Optional default layout to load at startup (and in Edit Mode when enabled).")]
+        [SerializeField] private LevelLayoutSO defaultLayout;
+
+        [Tooltip("If true, will auto-load the default layout on startup/initialization.")]
+        [SerializeField] private bool autoLoadDefaultLayout = true;
 
         /// <summary>Runtime grid model – single source of truth for tiles.</summary>
         public GridModel Grid { get; private set; }
@@ -59,17 +66,14 @@ namespace PuzzleEngine.Runtime.Core
         /// </summary>
         public void EnsureInitialized()
         {
-            // Make sure we at least have a config (or fallback default)
             EnsureGridConfig();
 
             if (!gridConfig)
             {
-                // If even fallback failed, we can't continue.
                 Debug.LogWarning("[PuzzleManager] GridConfigSO is missing; grid will not be initialized.", this);
                 return;
             }
 
-            // Rebuild grid if missing or dimensions changed
             if (Grid == null ||
                 Grid.Width != gridConfig.width ||
                 Grid.Height != gridConfig.height)
@@ -77,14 +81,20 @@ namespace PuzzleEngine.Runtime.Core
                 InitializeGrid();
             }
 
-            // Rebuild rules/simulator if missing and we have the data
             if ((RuleEngine == null || Simulator == null) &&
                 tileDatabase &&
                 ruleSet)
             {
                 InitializeRules();
             }
+
+            // 👇 NEW: optionally load default layout
+            if (autoLoadDefaultLayout && defaultLayout && Grid != null)
+            {
+                defaultLayout.ApplyToGrid(Grid);
+            }
         }
+
 
         /// <summary>
         /// Ensures we have some GridConfigSO assigned; creates an in-memory default otherwise.
