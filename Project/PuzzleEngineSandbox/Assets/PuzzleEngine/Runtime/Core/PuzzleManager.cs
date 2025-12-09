@@ -234,6 +234,60 @@ namespace PuzzleEngine.Runtime.Core
 
             return steps;
         }
+        
+        #region Layout
+
+        /// <summary>
+        /// Captures the current grid state into the given LevelLayout asset.
+        /// </summary>
+        public void SaveCurrentLayout(LevelLayoutSO layout)
+        {
+            if (layout == null)
+            {
+                Debug.LogWarning("[PuzzleManager] SaveCurrentLayout called with null layout.", this);
+                return;
+            }
+
+            if (Grid == null)
+            {
+                Debug.LogWarning("[PuzzleManager] SaveCurrentLayout called but Grid is null.", this);
+                return;
+            }
+
+#if UNITY_EDITOR
+            UnityEditor.Undo.RecordObject(layout, "Save Level Layout");
+#endif
+            layout.CaptureFromGrid(Grid);
+
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(layout);
+#endif
+        }
+
+        /// <summary>
+        /// Loads a layout into the current grid, rebuilding if needed.
+        /// </summary>
+        public void LoadLayout(LevelLayoutSO layout)
+        {
+            if (layout == null)
+            {
+                Debug.LogWarning("[PuzzleManager] LoadLayout called with null layout.", this);
+                return;
+            }
+
+            EnsureInitialized();
+
+            if (Grid == null)
+            {
+                Debug.LogWarning("[PuzzleManager] LoadLayout called but Grid is null after initialization.", this);
+                return;
+            }
+
+            layout.ApplyToGrid(Grid);
+        }
+
+        #endregion
+
 
 #if UNITY_EDITOR
         // --------------------------------------------------------------------
