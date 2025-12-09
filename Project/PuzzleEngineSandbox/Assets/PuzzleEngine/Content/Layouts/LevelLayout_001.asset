@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 297f6fff4ec84cb5b476ecbb5c908ef4, type: 3}
+  m_Name: LevelLayout_001
+  m_EditorClassIdentifier: 
+  width: 6
+  height: 6
+  cells:
+  - x: 0
+    y: 0
+    tileTypeId: 1
+    level: 1
+  - x: 1
+    y: 0
+    tileTypeId: 1
+    level: 1
+  - x: 2
+    y: 0
+    tileTypeId: 2
+    level: 1
+  - x: 3
+    y: 0
+    tileTypeId: 2
+    level: 1
+  - x: 4
+    y: 0
+    tileTypeId: 1
+    level: 1
+  - x: 5
+    y: 0
+    tileTypeId: 1
+    level: 1
+  - x: 0
+    y: 1
+    tileTypeId: 2
+    level: 1
+  - x: 1
+    y: 1
+    tileTypeId: 2
+    level: 1
+  - x: 2
+    y: 1
+    tileTypeId: 1
+    level: 1
+  - x: 3
+    y: 1
+    tileTypeId: 3
+    level: 1
+  - x: 4
+    y: 1
+    tileTypeId: 2
+    level: 1
+  - x: 5
+    y: 1
+    tileTypeId: 3
+    level: 1
+  - x: 0
+    y: 2
+    tileTypeId: 3
+    level: 1
+  - x: 1
+    y: 2
+    tileTypeId: 3
+    level: 1
+  - x: 2
+    y: 2
+    tileTypeId: 1
+    level: 1
+  - x: 3
+    y: 2
+    tileTypeId: 3
+    level: 1
+  - x: 4
+    y: 2
+    tileTypeId: 2
+    level: 1
+  - x: 5
+    y: 2
+    tileTypeId: 2
+    level: 1
+  - x: 0
+    y: 3
+    tileTypeId: 2
+    level: 1
+  - x: 1
+    y: 3
+    tileTypeId: 2
+    level: 1
+  - x: 2
+    y: 3
+    tileTypeId: 2
+    level: 1
+  - x: 3
+    y: 3
+    tileTypeId: 3
+    level: 1
+  - x: 4
+    y: 3
+    tileTypeId: 1
+    level: 1
+  - x: 5
+    y: 3
+    tileTypeId: 2
+    level: 1
+  - x: 0
+    y: 4
+    tileTypeId: 1
+    level: 1
+  - x: 1
+    y: 4
+    tileTypeId: 3
+    level: 1
+  - x: 2
+    y: 4
+    tileTypeId: 1
+    level: 1
+  - x: 3
+    y: 4
+    tileTypeId: 1
+    level: 1
+  - x: 4
+    y: 4
+    tileTypeId: 3
+    level: 1
+  - x: 5
+    y: 4
+    tileTypeId: 3
+    level: 1
+  - x: 0
+    y: 5
+    tileTypeId: 3
+    level: 1
+  - x: 1
+    y: 5
+    tileTypeId: 3
+    level: 1
+  - x: 3
+    y: 5
+    tileTypeId: 1
+    level: 1
+  - x: 4
+    y: 5
+    tileTypeId: 2
+    level: 1
+  - x: 5
+    y: 5
+    tileTypeId: 3
+    level: 1

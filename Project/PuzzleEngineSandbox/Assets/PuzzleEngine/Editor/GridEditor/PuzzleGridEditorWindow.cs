@@ -7,14 +7,16 @@ namespace PuzzleEngine.EditorTools
 {
     public class PuzzleGridEditorWindow : EditorWindow
     {
+        private const float CellSize = 32f;
+        private const float CellPadding = 4f;
+        
         private PuzzleManager _puzzleManager;
         private TileDatabaseSO _tileDatabase;
 
         private int _selectedTileIndex = -1;
         private Vector2 _scrollPos;
-
-        private const float CellSize = 32f;
-        private const float CellPadding = 4f;
+        
+        private LevelLayoutSO _currentLayout;
 
         [MenuItem("PuzzleEngine/Grid Editor")]
         public static void Open()
@@ -44,6 +46,8 @@ namespace PuzzleEngine.EditorTools
 
             EditorGUILayout.Space();
             DrawTilePalette();
+            EditorGUILayout.Space();
+            DrawLayoutSection();
             EditorGUILayout.Space();
             DrawGridEditor();
         }
@@ -136,6 +140,64 @@ namespace PuzzleEngine.EditorTools
                 }
             }
         }
+        
+        private void DrawLayoutSection()
+        {
+            using (new EditorGUILayout.VerticalScope("box"))
+            {
+                EditorGUILayout.LabelField("Layout", EditorStyles.boldLabel);
+
+                _currentLayout = (LevelLayoutSO)EditorGUILayout.ObjectField(
+                    "Level Layout",
+                    _currentLayout,
+                    typeof(LevelLayoutSO),
+                    false);
+
+                if (!_currentLayout)
+                {
+                    EditorGUILayout.HelpBox(
+                        "Assign a LevelLayout asset to save or load grid state.",
+                        MessageType.Info);
+                    return;
+                }
+
+                EditorGUILayout.BeginHorizontal();
+
+                if (GUILayout.Button("Load Layout → Grid"))
+                {
+                    if (!_puzzleManager)
+                    {
+                        Debug.LogWarning("[PuzzleGridEditor] No PuzzleManager assigned.");
+                    }
+                    else
+                    {
+                        _puzzleManager.EnsureInitialized();
+                        _puzzleManager.LoadLayout(_currentLayout);
+                        SceneView.RepaintAll();
+                        Repaint();
+                    }
+                }
+
+                if (GUILayout.Button("Save Grid → Layout"))
+                {
+                    if (!_puzzleManager)
+                    {
+                        Debug.LogWarning("[PuzzleGridEditor] No PuzzleManager assigned.");
+                    }
+                    else
+                    {
+                        _puzzleManager.EnsureInitialized();
+                        _puzzleManager.SaveCurrentLayout(_currentLayout);
+                        AssetDatabase.SaveAssets();
+                        SceneView.RepaintAll();
+                        Repaint();
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
 
         private void DrawGridEditor()
         {
