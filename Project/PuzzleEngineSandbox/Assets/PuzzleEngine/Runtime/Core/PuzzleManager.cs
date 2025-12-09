@@ -1,6 +1,6 @@
 using PuzzleEngine.Runtime.Rules;
-using UnityEngine;
 using PuzzleEngine.Runtime.Simulation;
+using UnityEngine;
 
 namespace PuzzleEngine.Runtime.Core
 {
@@ -9,16 +9,18 @@ namespace PuzzleEngine.Runtime.Core
     /// Owns the GridModel and wires in the RuleEngine and GridSimulator.
     /// </summary>
     [DisallowMultipleComponent]
+    [ExecuteAlways]
     public class PuzzleManager : MonoBehaviour
     {
-        [Header("Grid Config")] [SerializeField]
-        private GridConfigSO gridConfig;
+        [Header("Grid Config")]
+        [SerializeField] private GridConfigSO gridConfig;
 
-        [Header("Content")] [Tooltip("Registry of all tile types used in this puzzle set.")] [SerializeField]
-        private TileDatabaseSO tileDatabase;
+        [Header("Content")]
+        [Tooltip("Registry of all tile types used in this puzzle set.")]
+        [SerializeField] private TileDatabaseSO tileDatabase;
 
-        [Tooltip("Set of interaction rules (merge/combine) used by this puzzle.")] [SerializeField]
-        private RuleSetSO ruleSet;
+        [Tooltip("Set of interaction rules (merge/combine) used by this puzzle.")]
+        [SerializeField] private RuleSetSO ruleSet;
 
         /// <summary>Runtime grid model – single source of truth for tiles.</summary>
         public GridModel Grid { get; private set; }
@@ -31,19 +33,71 @@ namespace PuzzleEngine.Runtime.Core
 
         private void Awake()
         {
-            EnsureGridConfig();
-            InitializeGrid();
-            InitializeRules();
+            // Runtime entry point
+            EnsureInitialized();
         }
 
-        #region Initialization
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            // Keep things consistent in Edit Mode when config or references change
+            if (Application.isPlaying) return;
+            Grid = null;
+            RuleEngine = null;
+            Simulator = null;
+            EnsureInitialized();
+        }
+#endif
 
+        // --------------------------------------------------------------------
+        // Initialization
+        // --------------------------------------------------------------------
+
+        /// <summary>
+        /// Shared initialization entry point for both runtime and editor tools.
+        /// Safe to call multiple times; will only rebuild when needed.
+        /// </summary>
+        public void EnsureInitialized()
+        {
+            // Make sure we at least have a config (or fallback default)
+            EnsureGridConfig();
+
+            if (!gridConfig)
+            {
+                // If even fallback failed, we can't continue.
+                Debug.LogWarning("[PuzzleManager] GridConfigSO is missing; grid will not be initialized.", this);
+                return;
+            }
+
+            // Rebuild grid if missing or dimensions changed
+            if (Grid == null ||
+                Grid.Width != gridConfig.width ||
+                Grid.Height != gridConfig.height)
+            {
+                InitializeGrid();
+            }
+
+            // Rebuild rules/simulator if missing and we have the data
+            if ((RuleEngine == null || Simulator == null) &&
+                tileDatabase &&
+                ruleSet)
+            {
+                InitializeRules();
+            }
+        }
+
+        /// <summary>
+        /// Ensures we have some GridConfigSO assigned; creates an in-memory default otherwise.
+        /// </summary>
         private void EnsureGridConfig()
         {
-            if (gridConfig != null)
+            if (gridConfig)
                 return;
 
-            Debug.LogError("[PuzzleManager] GridConfigSO is not assigned. Creating a default one in-memory.", this);
+            Debug.LogError(
+                "[PuzzleManager] GridConfigSO is not assigned. Creating a default in-memory asset (6x6).",
+                this);
+
             gridConfig = ScriptableObject.CreateInstance<GridConfigSO>();
             gridConfig.width = 6;
             gridConfig.height = 6;
@@ -52,27 +106,43 @@ namespace PuzzleEngine.Runtime.Core
         private void InitializeGrid()
         {
             Grid = new GridModel(gridConfig.width, gridConfig.height);
-            Debug.Log($"[PuzzleManager] Initialized grid {gridConfig.width}x{gridConfig.height}", this);
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                // Avoid spamming logs in play mode, but useful during tooling work
+                Debug.Log($"[PuzzleManager] Initialized grid {gridConfig.width}x{gridConfig.height} (Edit Mode).", this);
+            }
+#endif
         }
 
         private void InitializeRules()
         {
-            if (tileDatabase == null || ruleSet == null)
+            if (!tileDatabase || !ruleSet)
             {
-                Debug.LogWarning("[PuzzleManager] TileDatabase or RuleSet not assigned. " +
-                                 "RuleEngine and Simulator will not be available.", this);
+                Debug.LogWarning(
+                    "[PuzzleManager] TileDatabase or RuleSet not assigned. RuleEngine and Simulator will not be available.",
+                    this);
+                RuleEngine = null;
+                Simulator = null;
                 return;
             }
 
             RuleEngine = new RuleEngine(tileDatabase, ruleSet);
+
+            // Assuming GridSimulator takes RuleEngine and steps any Grid passed in
             Simulator = new GridSimulator(RuleEngine);
 
-            Debug.Log("[PuzzleManager] RuleEngine and GridSimulator initialized.", this);
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                Debug.Log("[PuzzleManager] RuleEngine and GridSimulator initialized (Edit Mode).", this);
+            }
+#endif
         }
 
-        #endregion
-
-        #region Tile Helpers
+        // --------------------------------------------------------------------
+        // Tile Helpers
+        // --------------------------------------------------------------------
 
         /// <summary>
         /// Safely sets a tile if inside bounds. Returns true on success.
@@ -101,9 +171,9 @@ namespace PuzzleEngine.Runtime.Core
             return true;
         }
 
-        #endregion
-
-        #region Rule Application
+        // --------------------------------------------------------------------
+        // Rule Application
+        // --------------------------------------------------------------------
 
         /// <summary>
         /// Attempts to apply a rule between the two coordinates (x1,y1) and (x2,y2).
@@ -131,9 +201,9 @@ namespace PuzzleEngine.Runtime.Core
             return true;
         }
 
-        #endregion
-
-        #region Simulation
+        // --------------------------------------------------------------------
+        // Simulation
+        // --------------------------------------------------------------------
 
         /// <summary>
         /// Performs a single deterministic simulation step.
@@ -165,12 +235,12 @@ namespace PuzzleEngine.Runtime.Core
             return steps;
         }
 
-        #endregion
-
 #if UNITY_EDITOR
-        /// <summary>
-        /// Debug-only accessors used by editor gizmos.
-        /// </summary>
+        // --------------------------------------------------------------------
+        // Debug / Editor helpers
+        // --------------------------------------------------------------------
+
+        /// <summary>Debug-only accessor used by editor gizmos.</summary>
         public GridConfigSO GetGridConfigForDebug() => gridConfig;
 
         public TileDatabaseSO GetTileDatabaseForDebug() => tileDatabase;
