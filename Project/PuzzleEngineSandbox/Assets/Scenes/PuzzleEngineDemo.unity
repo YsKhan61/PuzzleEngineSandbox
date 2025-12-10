@@ -388,6 +388,56 @@ MonoBehaviour:
   worldOrigin: {x: 0, y: 0}
   cellSize: 1
   targetCamera: {fileID: 519420031}
+--- !u!1 &936751548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 936751549}
+  - component: {fileID: 936751550}
+  m_Layer: 0
+  m_Name: GridView
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &936751549
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936751548}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &936751550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936751548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9259a540bd5640ee826764301f2162b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  puzzleManager: {fileID: 1162303598}
+  tileDatabase: {fileID: 11400000, guid: e1e25b7e9b1a27649994f9896e860cfa, type: 2}
+  tileViewPrefab: {fileID: 3815981982216603894, guid: 41193d07a0fb5bc4eb0b0b65b95a075b, type: 3}
+  worldOrigin: {x: 0, y: 0}
+  cellSize: 1
+  autoBuildOnStart: 1
 --- !u!1 &1162303596
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,3 +515,4 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 1162303597}
   - {fileID: 915945942}
+  - {fileID: 936751549}
