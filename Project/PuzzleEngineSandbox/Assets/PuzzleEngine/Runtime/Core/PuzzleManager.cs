@@ -1,3 +1,4 @@
+using System;
 using PuzzleEngine.Runtime.Rules;
 using PuzzleEngine.Runtime.Simulation;
 using UnityEngine;
@@ -38,6 +39,11 @@ namespace PuzzleEngine.Runtime.Core
         /// <summary>Deterministic simulation stepper for the grid.</summary>
         public GridSimulator Simulator { get; private set; }
 
+        /// <summary>
+        /// Raised whenever the grid content changes (tiles set, rules applied, layout loaded, etc.).
+        /// </summary>
+        public event Action<GridModel> OnGridChanged;
+
         private void Awake()
         {
             // Runtime entry point
@@ -74,11 +80,14 @@ namespace PuzzleEngine.Runtime.Core
                 return;
             }
 
+            bool gridRebuilt = false;
+
             if (Grid == null ||
                 Grid.Width != gridConfig.width ||
                 Grid.Height != gridConfig.height)
             {
                 InitializeGrid();
+                gridRebuilt = true;
             }
 
             if ((RuleEngine == null || Simulator == null) &&
@@ -88,13 +97,19 @@ namespace PuzzleEngine.Runtime.Core
                 InitializeRules();
             }
 
-            // 👇 NEW: optionally load default layout
+            // Optionally load default layout
             if (autoLoadDefaultLayout && defaultLayout && Grid != null)
             {
                 defaultLayout.ApplyToGrid(Grid);
+                gridRebuilt = true;
+            }
+
+            // Notify listeners if we have a valid grid (and especially if we rebuilt it)
+            if (Grid != null && gridRebuilt)
+            {
+                RaiseGridChanged();
             }
         }
-
 
         /// <summary>
         /// Ensures we have some GridConfigSO assigned; creates an in-memory default otherwise.
@@ -163,6 +178,7 @@ namespace PuzzleEngine.Runtime.Core
                 return false;
 
             Grid.Set(x, y, tile);
+            RaiseGridChanged();
             return true;
         }
 
@@ -208,6 +224,8 @@ namespace PuzzleEngine.Runtime.Core
 
             Grid.Set(x1, y1, newA);
             Grid.Set(x2, y2, newB);
+
+            RaiseGridChanged();
             return true;
         }
 
@@ -224,7 +242,13 @@ namespace PuzzleEngine.Runtime.Core
             if (Simulator == null || Grid == null)
                 return false;
 
-            return Simulator.Step(Grid);
+            bool changed = Simulator.Step(Grid);
+            if (changed)
+            {
+                RaiseGridChanged();
+            }
+
+            return changed;
         }
 
         /// <summary>
@@ -240,6 +264,11 @@ namespace PuzzleEngine.Runtime.Core
             while (steps < maxSteps && Simulator.Step(Grid))
             {
                 steps++;
+            }
+
+            if (steps > 0)
+            {
+                RaiseGridChanged();
             }
 
             return steps;
@@ -294,10 +323,10 @@ namespace PuzzleEngine.Runtime.Core
             }
 
             layout.ApplyToGrid(Grid);
+            RaiseGridChanged();
         }
 
         #endregion
-
 
 #if UNITY_EDITOR
         // --------------------------------------------------------------------
@@ -309,5 +338,17 @@ namespace PuzzleEngine.Runtime.Core
 
         public TileDatabaseSO GetTileDatabaseForDebug() => tileDatabase;
 #endif
+
+        // --------------------------------------------------------------------
+        // Internal helpers
+        // --------------------------------------------------------------------
+
+        private void RaiseGridChanged()
+        {
+            if (Grid == null)
+                return;
+
+            OnGridChanged?.Invoke(Grid);
+        }
     }
 }

@@ -27,16 +27,16 @@ namespace PuzzleEngine.Tests.Editmode
             db.SetTileTypesForTests(new List<TileTypeSO> { wood });
 
             // Create merge rule: Wood + Wood -> level +1
-            var rule = ScriptableObject.CreateInstance<InteractionRuleSO>();
+            var rule = ScriptableObject.CreateInstance<MergeRulesSO>();
             rule.tileA = wood;
             rule.tileB = wood;
             rule.unordered = true;
             rule.isMergeRule = true;
             rule.levelDelta = 1;
-            rule.resultMode = InteractionRuleSO.RuleResultMode.ReplaceBoth;
+            rule.resultMode = MergeRulesSO.RuleResultMode.ReplaceBoth;
 
             var ruleSet = ScriptableObject.CreateInstance<RuleSetSO>();
-            ruleSet.SetRulesForTests(new List<InteractionRuleSO> { rule });
+            ruleSet.SetRulesForTests(new List<MergeRulesSO> { rule });
 
             var engine = new RuleEngine(db, ruleSet);
 

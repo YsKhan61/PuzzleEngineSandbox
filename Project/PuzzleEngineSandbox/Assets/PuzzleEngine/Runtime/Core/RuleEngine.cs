@@ -11,7 +11,7 @@ namespace PuzzleEngine.Runtime.Core
     /// </summary>
     public sealed class RuleEngine
     {
-        private readonly Dictionary<RuleKey, InteractionRuleSO> _ruleLookup;
+        private readonly Dictionary<RuleKey, MergeRulesSO> _ruleLookup;
         private readonly Dictionary<int, TileTypeSO> _tileById;
 
         private readonly struct RuleKey : IEquatable<RuleKey>
@@ -56,9 +56,9 @@ namespace PuzzleEngine.Runtime.Core
             return dict;
         }
 
-        private static Dictionary<RuleKey, InteractionRuleSO> BuildRuleLookup(RuleSetSO ruleSet)
+        private static Dictionary<RuleKey, MergeRulesSO> BuildRuleLookup(RuleSetSO ruleSet)
         {
-            var dict = new Dictionary<RuleKey, InteractionRuleSO>();
+            var dict = new Dictionary<RuleKey, MergeRulesSO>();
 
             foreach (var rule in ruleSet.Rules)
             {
@@ -89,7 +89,7 @@ namespace PuzzleEngine.Runtime.Core
             return dict;
         }
 
-        private bool TryGetRule(TileData a, TileData b, out InteractionRuleSO rule)
+        private bool TryGetRule(TileData a, TileData b, out MergeRulesSO rule)
         {
             rule = null;
 
@@ -145,17 +145,17 @@ namespace PuzzleEngine.Runtime.Core
 
             switch (rule.resultMode)
             {
-                case InteractionRuleSO.RuleResultMode.ReplaceBoth:
+                case MergeRulesSO.RuleResultMode.ReplaceBoth:
                     newA = result;
                     newB = result;
                     break;
 
-                case InteractionRuleSO.RuleResultMode.ReplaceFirst:
+                case MergeRulesSO.RuleResultMode.ReplaceFirst:
                     newA = result;
                     newB = TileData.Empty;
                     break;
 
-                case InteractionRuleSO.RuleResultMode.ReplaceSecond:
+                case MergeRulesSO.RuleResultMode.ReplaceSecond:
                     newA = TileData.Empty;
                     newB = result;
                     break;

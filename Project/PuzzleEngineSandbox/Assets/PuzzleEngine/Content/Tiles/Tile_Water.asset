@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tile_Water
   m_EditorClassIdentifier: 
   id: 3
-  displayName: Tile_Wood
+  displayName: Tile_Water
   debugColor: {r: 0, g: 0.37163115, b: 1, a: 1}
   icon: {fileID: 0}
   canMerge: 1

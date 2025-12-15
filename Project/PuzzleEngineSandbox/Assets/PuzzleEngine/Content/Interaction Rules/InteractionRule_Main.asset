@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abf1253aa2cd4c6eab260f3593b697c2, type: 3}
-  m_Name: Tile_Fire
+  m_Script: {fileID: 11500000, guid: 99daaf9cece64dd792d7192ec3e08093, type: 3}
+  m_Name: InteractionRule_Main
   m_EditorClassIdentifier: 
-  id: 2
-  displayName: Tile_Fire
-  debugColor: {r: 1, g: 0, b: 0, a: 1}
-  icon: {fileID: 0}
-  canMerge: 1
-  maxLevel: 3
+  adjacencyMode: 0
+  cascadeMode: 2
