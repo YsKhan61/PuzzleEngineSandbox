@@ -26,7 +26,7 @@ namespace PuzzleEngine.Runtime.Core
     [CreateAssetMenu(
         fileName = "InteractionRule",
         menuName = "PuzzleEngine/Interaction Rule")]
-    public class InteractionRulesSO : ScriptableObject
+    public class InteractionRuleSO : ScriptableObject
     {
         public AdjacencyMode adjacencyMode = AdjacencyMode.Anywhere;
         public CascadeMode cascadeMode = CascadeMode.GlobalCascade;
