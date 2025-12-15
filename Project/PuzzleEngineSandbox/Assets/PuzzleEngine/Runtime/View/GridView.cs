@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PuzzleEngine.Runtime.Core;
+using PuzzleEngine.Runtime.Rules;
 using UnityEngine;
 
 namespace PuzzleEngine.Runtime.View
@@ -15,6 +16,7 @@ namespace PuzzleEngine.Runtime.View
         [SerializeField] private PuzzleManager puzzleManager;
         [SerializeField] private TileView tilePrefab;
         [SerializeField] private Transform gridRoot;
+        [SerializeField] private TileDatabaseSO tileDatabase; 
 
         [Header("Layout")]
         [Tooltip("World-space origin for cell (0,0), top-left of the grid.")]
@@ -23,15 +25,14 @@ namespace PuzzleEngine.Runtime.View
         [Tooltip("Size of each cell in world units.")]
         [SerializeField] private float cellSize = 1f;
 
-        private readonly Dictionary<Vector2Int, TileView> _tiles =
-            new Dictionary<Vector2Int, TileView>();
+        private readonly Dictionary<Vector2Int, TileView> _tiles = new ();
 
         private void Awake()
         {
-            if (gridRoot == null)
+            if (!gridRoot)
                 gridRoot = transform;
 
-            if (puzzleManager == null)
+            if (!puzzleManager)
             {
                 puzzleManager = FindObjectOfType<PuzzleManager>();
             }
@@ -39,7 +40,7 @@ namespace PuzzleEngine.Runtime.View
 
         private void OnEnable()
         {
-            if (puzzleManager != null)
+            if (puzzleManager)
             {
                 puzzleManager.EnsureInitialized();
                 puzzleManager.OnGridChanged += HandleGridChanged;
@@ -53,7 +54,7 @@ namespace PuzzleEngine.Runtime.View
 
         private void OnDisable()
         {
-            if (puzzleManager != null)
+            if (puzzleManager)
             {
                 puzzleManager.OnGridChanged -= HandleGridChanged;
             }
@@ -61,7 +62,7 @@ namespace PuzzleEngine.Runtime.View
 
         private void HandleGridChanged(GridModel model)
         {
-            if (model == null || tilePrefab == null)
+            if (model == null || !tilePrefab)
                 return;
 
             RebuildIfSizeChanged(model);
@@ -77,7 +78,7 @@ namespace PuzzleEngine.Runtime.View
             // Clear and rebuild completely if size changed.
             foreach (var kvp in _tiles)
             {
-                if (kvp.Value != null)
+                if (kvp.Value)
                 {
                     if (Application.isPlaying)
                         Destroy(kvp.Value.gameObject);
@@ -106,7 +107,8 @@ namespace PuzzleEngine.Runtime.View
                     tileView.transform.position = worldPos;
 
                     var data = model.Get(x, y);
-                    tileView.Initialize(x, y, data);
+                    Color color = ResolveColor(data);
+                    tileView.Initialize(x, y, data, color);
 
                     _tiles[key] = tileView;
                 }
@@ -120,15 +122,34 @@ namespace PuzzleEngine.Runtime.View
                 Vector2Int coord = kvp.Key;
                 TileView view = kvp.Value;
 
-                if (view == null)
+                if (!view)
                     continue;
 
                 if (!model.IsInside(coord.x, coord.y))
                     continue;
 
                 TileData data = model.Get(coord.x, coord.y);
-                view.UpdateFromModel(data);
+                Color color = ResolveColor(data);
+                view.UpdateFromModel(data, color);
             }
+        }
+        
+        private Color ResolveColor(TileData data)
+        {
+            if (data.IsEmpty)
+                return Color.clear;
+
+            if (!tileDatabase || tileDatabase.TileTypes == null)
+                return Color.white;
+
+            int id = data.TileTypeId;
+            foreach (var type in tileDatabase.TileTypes)
+            {
+                if (type && type.Id == id)
+                    return type.DebugColor;
+            }
+
+            return Color.white;
         }
     }
 }
