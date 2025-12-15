@@ -397,6 +397,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 936751549}
+  - component: {fileID: 936751551}
   - component: {fileID: 936751550}
   m_Layer: 0
   m_Name: GridView
@@ -438,6 +439,23 @@ MonoBehaviour:
   worldOrigin: {x: 0, y: 0}
   cellSize: 1
   autoBuildOnStart: 1
+--- !u!114 &936751551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936751548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2824cc70da4718be229f9d8ccee911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  puzzleManager: {fileID: 1162303598}
+  tilePrefab: {fileID: 1080524899638482781, guid: 41193d07a0fb5bc4eb0b0b65b95a075b, type: 3}
+  gridRoot: {fileID: 0}
+  cellSize: 1
+  centerGrid: 1
 --- !u!1 &1162303596
 GameObject:
   m_ObjectHideFlags: 0
