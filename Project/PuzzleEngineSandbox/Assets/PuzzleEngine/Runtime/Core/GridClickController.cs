@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PuzzleEngine.Runtime.View;
+using UnityEngine;
 
 namespace PuzzleEngine.Runtime.Core
 {
@@ -12,7 +13,8 @@ namespace PuzzleEngine.Runtime.Core
     {
         [Header("References")]
         [SerializeField] private PuzzleManager puzzleManager;
-
+        [SerializeField] private GridView gridView; 
+        
         [Header("Grid Mapping")]
         [Tooltip("World-space origin of cell (0,0). Should match GridGizmoRenderer origin.")]
         [SerializeField] private Vector2 worldOrigin = Vector2.zero;
@@ -27,16 +29,19 @@ namespace PuzzleEngine.Runtime.Core
 
         private void Awake()
         {
-            if (puzzleManager == null)
+            if (!puzzleManager)
                 puzzleManager = FindObjectOfType<PuzzleManager>();
 
-            if (targetCamera == null)
+            if (!targetCamera)
                 targetCamera = Camera.main;
+            
+            if (!gridView)
+                gridView = FindObjectOfType<GridView>();
         }
 
         private void Update()
         {
-            if (puzzleManager == null || puzzleManager.Grid == null)
+            if (!puzzleManager || puzzleManager.Grid == null)
                 return;
 
             if (Input.GetMouseButtonDown(0))
@@ -80,6 +85,7 @@ namespace PuzzleEngine.Runtime.Core
             {
                 _firstSelection = cell;
                 Debug.Log($"[GridClickController] First selection: {cell.x},{cell.y}");
+                RefreshHighlight();
             }
             else
             {
@@ -104,7 +110,19 @@ namespace PuzzleEngine.Runtime.Core
                 }
 
                 _firstSelection = null;
+                RefreshHighlight();
             }
+        }
+        
+        private void RefreshHighlight()
+        {
+            if (!gridView)
+                return;
+
+            if (_firstSelection.HasValue)
+                gridView.SetSelectedCell(_firstSelection.Value);
+            else
+                gridView.SetSelectedCell(null);
         }
     }
 }

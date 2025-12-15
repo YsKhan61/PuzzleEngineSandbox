@@ -27,15 +27,21 @@ namespace PuzzleEngine.Runtime.View
 
         private readonly Dictionary<Vector2Int, TileView> _tiles = new ();
 
+        private Vector2Int? _selectedCoord;
+        private TileView _selectedView;
+        
         private void Awake()
         {
             if (!gridRoot)
                 gridRoot = transform;
 
             if (!puzzleManager)
-            {
                 puzzleManager = FindObjectOfType<PuzzleManager>();
-            }
+            
+#if UNITY_EDITOR
+            if (!tileDatabase && puzzleManager)
+                tileDatabase = puzzleManager.GetTileDatabaseForDebug();
+#endif
         }
 
         private void OnEnable()
@@ -46,18 +52,14 @@ namespace PuzzleEngine.Runtime.View
                 puzzleManager.OnGridChanged += HandleGridChanged;
 
                 if (puzzleManager.Grid != null)
-                {
                     HandleGridChanged(puzzleManager.Grid);
-                }
             }
         }
 
         private void OnDisable()
         {
             if (puzzleManager)
-            {
                 puzzleManager.OnGridChanged -= HandleGridChanged;
-            }
         }
 
         private void HandleGridChanged(GridModel model)
@@ -67,6 +69,7 @@ namespace PuzzleEngine.Runtime.View
 
             RebuildIfSizeChanged(model);
             RefreshAllTiles(model);
+            RefreshSelectionHighlight();
         }
 
         private void RebuildIfSizeChanged(GridModel model)
@@ -113,6 +116,57 @@ namespace PuzzleEngine.Runtime.View
                     _tiles[key] = tileView;
                 }
             }
+        }
+        
+        public void SetSelectedCell(Vector2Int? coord)
+        {
+            // Clear previous
+            if (_selectedView)
+                _selectedView.SetSelected(false);
+
+            _selectedView = null;
+            _selectedCoord = coord;
+
+            if (!_selectedCoord.HasValue)
+                return;
+
+            if (_tiles.TryGetValue(_selectedCoord.Value, out var view) && view)
+            {
+                _selectedView = view;
+                _selectedView.SetSelected(true);
+            }
+        }
+        
+        public bool TryWorldToCell(Vector3 worldPos, out Vector2Int coord)
+        {
+            coord = default;
+
+            if (puzzleManager == null || puzzleManager.Grid == null)
+                return false;
+
+            float localX = worldPos.x - worldOrigin.x;
+            float localY = worldPos.y - worldOrigin.y;
+
+            int x = Mathf.FloorToInt(localX / cellSize);
+            int y = Mathf.FloorToInt(-localY / cellSize); // top-left origin, y down
+
+            if (!puzzleManager.Grid.IsInside(x, y))
+                return false;
+
+            coord = new Vector2Int(x, y);
+            return true;
+        }
+
+        private void RefreshSelectionHighlight()
+        {
+            if (!_selectedCoord.HasValue)
+                return;
+
+            if (_tiles.TryGetValue(_selectedCoord.Value, out var view))
+                _selectedView = view;
+
+            if (_selectedView)
+                _selectedView.SetSelected(true);
         }
 
         private void RefreshAllTiles(GridModel model)
