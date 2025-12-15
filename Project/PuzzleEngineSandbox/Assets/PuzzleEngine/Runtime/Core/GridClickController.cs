@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using PuzzleEngine.Runtime.View;   // for GridView
+using PuzzleEngine.Runtime.View;
+using UnityEngine.Serialization;
 
 namespace PuzzleEngine.Runtime.Core
 {
@@ -7,14 +8,14 @@ namespace PuzzleEngine.Runtime.Core
     /// Minimal runtime input driver for the puzzle grid.
     /// Lets you click two cells and applies a rule between them
     /// using PuzzleManager.TryApplyRuleBetween, then triggers cascade
-    /// according to InteractionRulesSO.
+    /// according to InteractionRuleSO.
     /// </summary>
     public class GridClickController : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private PuzzleManager puzzleManager;
         [SerializeField] private GridView gridView;
-        [SerializeField] private InteractionRulesSO interactionRules;
+        [FormerlySerializedAs("interactionRule")] [SerializeField] private InteractionRuleSO interactionRule;
 
         [Header("Grid Mapping")]
         [Tooltip("World-space origin of cell (0,0). Should match GridGizmoRenderer origin.")]
@@ -28,37 +29,21 @@ namespace PuzzleEngine.Runtime.Core
 
         private Vector2Int? _firstSelection;
 
-        private static readonly Vector2Int[] OrthoDirs =
-        {
-            new Vector2Int( 1, 0),
-            new Vector2Int(-1, 0),
-            new Vector2Int( 0, 1),
-            new Vector2Int( 0,-1)
-        };
-
-        private static readonly Vector2Int[] DiagDirs =
-        {
-            new Vector2Int( 1, 1),
-            new Vector2Int( 1,-1),
-            new Vector2Int(-1, 1),
-            new Vector2Int(-1,-1)
-        };
-
         private void Awake()
         {
-            if (!puzzleManager)
+            if (puzzleManager == null)
                 puzzleManager = FindObjectOfType<PuzzleManager>();
 
-            if (!targetCamera)
+            if (targetCamera == null)
                 targetCamera = Camera.main;
 
-            if (!gridView)
+            if (gridView == null)
                 gridView = FindObjectOfType<GridView>();
         }
 
         private void Update()
         {
-            if (!puzzleManager || puzzleManager.Grid == null)
+            if (puzzleManager == null || puzzleManager.Grid == null)
                 return;
 
             if (Input.GetMouseButtonDown(0))
@@ -73,7 +58,7 @@ namespace PuzzleEngine.Runtime.Core
 
         private Vector2Int? ScreenToGridCell(Vector3 screenPos)
         {
-            if (!targetCamera)
+            if (targetCamera == null)
                 return null;
 
             var world = targetCamera.ScreenToWorldPoint(screenPos);
@@ -98,7 +83,6 @@ namespace PuzzleEngine.Runtime.Core
         {
             if (_firstSelection == null)
             {
-                // First selection: just store & highlight
                 _firstSelection = cell;
                 Debug.Log($"[GridClickController] First selection: {cell.x},{cell.y}");
                 RefreshHighlight();
@@ -108,7 +92,7 @@ namespace PuzzleEngine.Runtime.Core
             var first  = _firstSelection.Value;
             var second = cell;
 
-            // Clicking the same cell again: deselect
+            // Clicking the same cell again → deselect
             if (second == first)
             {
                 _firstSelection = null;
@@ -116,10 +100,10 @@ namespace PuzzleEngine.Runtime.Core
                 return;
             }
 
-            // Check interaction rule: is this pair allowed?
-            if (!IsSelectionAllowed(first, second))
+            // Interaction rule: are these two allowed to interact?
+            if (!InteractionRuleEvaluator.IsSelectionAllowed(first, second, interactionRule))
             {
-                Debug.Log("[GridClickController] Pair not allowed by InteractionConfig. Changing selection.");
+                Debug.Log("[GridClickController] Pair not allowed by InteractionRule. Changing selection.");
                 _firstSelection = second;
                 RefreshHighlight();
                 return;
@@ -131,17 +115,15 @@ namespace PuzzleEngine.Runtime.Core
                 first.x, first.y,
                 second.x, second.y);
 
-            // Cascade behaviour controlled by InteractionConfig
             ApplyCascade(first, second, changed);
 
-            // Clear selection & highlight after interaction
             _firstSelection = null;
             RefreshHighlight();
         }
 
         private void RefreshHighlight()
         {
-            if (!gridView)
+            if (gridView == null)
                 return;
 
             if (_firstSelection.HasValue)
@@ -150,63 +132,24 @@ namespace PuzzleEngine.Runtime.Core
                 gridView.SetSelectedCell(null);
         }
 
-        // ---------------- Interaction rules ----------------
+        // -------------- Cascade behaviour --------------
 
-        /// <summary>
-        /// Whether the player is allowed to interact between these two cells,
-        /// based on AdjacencyMode (Anywhere / Orthogonal / Ortho+Diag).
-        /// </summary>
-        private bool IsSelectionAllowed(Vector2Int a, Vector2Int b)
-        {
-            if (a == b)
-                return false;
-
-            var mode = interactionRules
-                ? interactionRules.adjacencyMode
-                : AdjacencyMode.Anywhere; // Merge-mansion style default
-
-            int dx = Mathf.Abs(a.x - b.x);
-            int dy = Mathf.Abs(a.y - b.y);
-
-            switch (mode)
-            {
-                case AdjacencyMode.Anywhere:
-                    // Any two cells on the board may interact
-                    return true;
-
-                case AdjacencyMode.Orthogonal:
-                    // Exactly one step in horizontal OR vertical
-                    return dx + dy == 1;
-
-                case AdjacencyMode.OrthogonalAndDiagonal:
-                    // Any of the 8 neighbours
-                    return Mathf.Max(dx, dy) == 1;
-
-                default:
-                    return true;
-            }
-        }
-
-        /// <summary>
-        /// Applies cascade behaviour after a valid pair was merged,
-        /// based on CascadeMode (pair-only / neighbours / global).
-        /// </summary>
         private void ApplyCascade(Vector2Int first, Vector2Int second, bool changed)
         {
-            if (!changed || !puzzleManager)
+            if (!changed || puzzleManager == null)
                 return;
 
-            if (!interactionRules)
+            if (interactionRule == null)
             {
-                // Backwards-compatible default: single global step
+                // Backwards-compatible default: single simulation step
                 puzzleManager.StepSimulation();
                 return;
             }
 
-            switch (interactionRules.cascadeMode)
+            switch (interactionRule.cascadeMode)
             {
                 case CascadeMode.OnlySelectedPair:
-                    // Do nothing extra; only the clicked pair changed.
+                    // no extra work
                     break;
 
                 case CascadeMode.SelectedPairAndNeighbors:
@@ -220,43 +163,15 @@ namespace PuzzleEngine.Runtime.Core
             }
         }
 
-        /// <summary>
-        /// Applies rules between a center cell and its neighbours once.
-        /// Neighbourhood is orthogonal by default; diagonals included if
-        /// adjacency mode is OrthogonalAndDiagonal or Anywhere.
-        /// </summary>
         private void ApplyLocalNeighborCascade(Vector2Int center)
         {
             var grid = puzzleManager.Grid;
             if (grid == null)
                 return;
 
-            bool includeDiagonals =
-                interactionRules &&
-                (interactionRules.adjacencyMode == AdjacencyMode.OrthogonalAndDiagonal ||
-                 interactionRules.adjacencyMode == AdjacencyMode.Anywhere);
-
-            // Orthogonal neighbours
-            foreach (var dir in OrthoDirs)
+            foreach (var n in InteractionRuleEvaluator.GetNeighborCoords(center, grid, interactionRule))
             {
-                var n = center + dir;
-                if (grid.IsInside(n.x, n.y))
-                {
-                    puzzleManager.TryApplyRuleBetween(center.x, center.y, n.x, n.y);
-                }
-            }
-
-            // Diagonal neighbours (optional)
-            if (includeDiagonals)
-            {
-                foreach (var dir in DiagDirs)
-                {
-                    var n = center + dir;
-                    if (grid.IsInside(n.x, n.y))
-                    {
-                        puzzleManager.TryApplyRuleBetween(center.x, center.y, n.x, n.y);
-                    }
-                }
+                puzzleManager.TryApplyRuleBetween(center.x, center.y, n.x, n.y);
             }
         }
     }
