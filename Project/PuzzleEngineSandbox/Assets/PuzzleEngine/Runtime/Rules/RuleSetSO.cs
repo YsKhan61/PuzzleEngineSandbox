@@ -11,12 +11,12 @@ namespace PuzzleEngine.Runtime.Rules
     public class RuleSetSO : ScriptableObject
     {
         [SerializeField]
-        private List<InteractionRuleSO> rules = new List<InteractionRuleSO>();
+        private List<MergeRulesSO> rules = new List<MergeRulesSO>();
 
-        public IReadOnlyList<InteractionRuleSO> Rules => rules;
+        public IReadOnlyList<MergeRulesSO> Rules => rules;
         
 #if UNITY_EDITOR || UNITY_INCLUDE_TESTS
-        public void SetRulesForTests(List<InteractionRuleSO> list)
+        public void SetRulesForTests(List<MergeRulesSO> list)
         {
             rules = list;
         }

@@ -386,6 +386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleManager: {fileID: 1162303598}
   gridView: {fileID: 936751551}
+  interactionRules: {fileID: 11400000, guid: 24a10a10ec8c95c498bb7cf1884f41dc, type: 2}
   worldOrigin: {x: 0, y: 0}
   cellSize: 1
   targetCamera: {fileID: 519420031}

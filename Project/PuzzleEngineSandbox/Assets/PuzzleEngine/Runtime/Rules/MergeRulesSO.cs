@@ -7,8 +7,8 @@ namespace PuzzleEngine.Runtime.Rules
     /// Tile A + Tile B -> Result tiles.
     /// Can represent merges (A + A) or combines (A + B -> C).
     /// </summary>
-    [CreateAssetMenu(menuName = "PuzzleEngine/Interaction Rule", fileName = "InteractionRule")]
-    public class InteractionRuleSO : ScriptableObject
+    [CreateAssetMenu(menuName = "PuzzleEngine/Merge Rule", fileName = "MergeRules")]
+    public class MergeRulesSO : ScriptableObject
     {
         [Header("Inputs")]
         public TileTypeSO tileA;
