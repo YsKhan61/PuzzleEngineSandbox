@@ -186,7 +186,7 @@ namespace PuzzleEngine.EditorTools
                     }
                     else
                     {
-                        _puzzleManager.EnsureInitialized();
+                        _puzzleManager.EnsureInitialized(false);
                         _puzzleManager.SaveCurrentLayout(_currentLayout);
                         AssetDatabase.SaveAssets();
                         SceneView.RepaintAll();
