@@ -386,7 +386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleManager: {fileID: 1162303598}
   gridView: {fileID: 936751551}
-  interactionRules: {fileID: 11400000, guid: 24a10a10ec8c95c498bb7cf1884f41dc, type: 2}
+  interactionRule: {fileID: 11400000, guid: 24a10a10ec8c95c498bb7cf1884f41dc, type: 2}
   worldOrigin: {x: 0, y: 0}
   cellSize: 1
   targetCamera: {fileID: 519420031}
@@ -400,7 +400,6 @@ GameObject:
   m_Component:
   - component: {fileID: 936751549}
   - component: {fileID: 936751551}
-  - component: {fileID: 936751550}
   m_Layer: 0
   m_Name: GridView
   m_TagString: Untagged
@@ -423,24 +422,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &936751550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 936751548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9259a540bd5640ee826764301f2162b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  puzzleManager: {fileID: 1162303598}
-  tileDatabase: {fileID: 11400000, guid: e1e25b7e9b1a27649994f9896e860cfa, type: 2}
-  tileViewPrefab: {fileID: 3815981982216603894, guid: 41193d07a0fb5bc4eb0b0b65b95a075b, type: 3}
-  worldOrigin: {x: 0, y: 0}
-  cellSize: 1
-  autoBuildOnStart: 1
 --- !u!114 &936751551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -455,7 +436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleManager: {fileID: 1162303598}
   tilePrefab: {fileID: 1080524899638482781, guid: 41193d07a0fb5bc4eb0b0b65b95a075b, type: 3}
-  gridRoot: {fileID: 0}
+  gridRoot: {fileID: 936751549}
   tileDatabase: {fileID: 11400000, guid: e1e25b7e9b1a27649994f9896e860cfa, type: 2}
   worldOrigin: {x: 0, y: 0}
   cellSize: 1
@@ -507,7 +488,7 @@ MonoBehaviour:
   gridConfig: {fileID: 11400000, guid: 78d3a68a31c314642a000366429ba256, type: 2}
   tileDatabase: {fileID: 11400000, guid: e1e25b7e9b1a27649994f9896e860cfa, type: 2}
   ruleSet: {fileID: 11400000, guid: 0c7fc4cfaea07854d8830d536124c44c, type: 2}
-  defaultLayout: {fileID: 11400000, guid: 7481b69305961264cac6dd2c4ac4550e, type: 2}
+  defaultLayout: {fileID: 11400000, guid: 67cffff9d07462b4b80dae8c78d652e2, type: 2}
   autoLoadDefaultLayout: 1
 --- !u!114 &1162303599
 MonoBehaviour:
