@@ -70,7 +70,7 @@ namespace PuzzleEngine.Runtime.Core
         /// Shared initialization entry point for both runtime and editor tools.
         /// Safe to call multiple times; will only rebuild when needed.
         /// </summary>
-        public void EnsureInitialized()
+        public void EnsureInitialized(bool applyDefaultLayout = true)
         {
             EnsureGridConfig();
 
@@ -98,7 +98,10 @@ namespace PuzzleEngine.Runtime.Core
             }
 
             // Optionally load default layout
-            if (autoLoadDefaultLayout && defaultLayout && Grid != null)
+            if (applyDefaultLayout &&
+                autoLoadDefaultLayout &&
+                defaultLayout &&
+                Grid != null)
             {
                 defaultLayout.ApplyToGrid(Grid);
                 gridRebuilt = true;
@@ -110,6 +113,7 @@ namespace PuzzleEngine.Runtime.Core
                 RaiseGridChanged();
             }
         }
+
 
         /// <summary>
         /// Ensures we have some GridConfigSO assigned; creates an in-memory default otherwise.
@@ -313,8 +317,6 @@ namespace PuzzleEngine.Runtime.Core
                 Debug.LogWarning("[PuzzleManager] LoadLayout called with null layout.", this);
                 return;
             }
-
-            EnsureInitialized();
 
             if (Grid == null)
             {
