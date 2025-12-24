@@ -25,7 +25,7 @@ namespace PuzzleEngine.Runtime.View
         [Tooltip("Size of each cell in world units.")]
         [SerializeField] private float cellSize = 1f;
 
-        private readonly Dictionary<Vector2Int, TileView> _tiles = new ();
+        private readonly Dictionary<Vector2Int, TileView> _tiles = new();
 
         private Vector2Int? _selectedCoord;
         private TileView _selectedView;
@@ -134,6 +134,20 @@ namespace PuzzleEngine.Runtime.View
             {
                 _selectedView = view;
                 _selectedView.SetSelected(true);
+            }
+        }
+
+        /// <summary>
+        /// Triggers a short invalid-selection flash on the given cell,
+        /// if a TileView exists for that coordinate.
+        /// Intended to be used when a second click is not allowed
+        /// by the current InteractionRule.
+        /// </summary>
+        public void ShowInvalidSelection(Vector2Int coord)
+        {
+            if (_tiles.TryGetValue(coord, out var view) && view != null)
+            {
+                view.ShowInvalidSelection();
             }
         }
         
