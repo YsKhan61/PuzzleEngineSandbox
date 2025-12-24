@@ -15,7 +15,8 @@ namespace PuzzleEngine.Runtime.Core
         [Header("References")]
         [SerializeField] private PuzzleManager puzzleManager;
         [SerializeField] private GridView gridView;
-        [FormerlySerializedAs("interactionRule")] [SerializeField] private InteractionRuleSO interactionRule;
+        [FormerlySerializedAs("interactionRule")] 
+        [SerializeField] private InteractionRuleSO interactionRule;
 
         [Header("Grid Mapping")]
         [Tooltip("World-space origin of cell (0,0). Should match GridGizmoRenderer origin.")]
@@ -81,6 +82,7 @@ namespace PuzzleEngine.Runtime.Core
 
         private void OnCellClicked(Vector2Int cell)
         {
+            // First click: just select
             if (_firstSelection == null)
             {
                 _firstSelection = cell;
@@ -103,8 +105,13 @@ namespace PuzzleEngine.Runtime.Core
             // Interaction rule: are these two allowed to interact?
             if (!InteractionRuleEvaluator.IsSelectionAllowed(first, second, interactionRule))
             {
-                Debug.Log("[GridClickController] Pair not allowed by InteractionRule. Changing selection.");
-                _firstSelection = second;
+                Debug.Log("[GridClickController] Pair not allowed by InteractionRule. Showing invalid feedback.");
+
+                // NEW: visual feedback on invalid second click
+                if (gridView != null)
+                    gridView.ShowInvalidSelection(second);
+
+                // Keep the original first selection as anchor
                 RefreshHighlight();
                 return;
             }
@@ -117,6 +124,7 @@ namespace PuzzleEngine.Runtime.Core
 
             ApplyCascade(first, second, changed);
 
+            // Clear selection after a valid interaction
             _firstSelection = null;
             RefreshHighlight();
         }
