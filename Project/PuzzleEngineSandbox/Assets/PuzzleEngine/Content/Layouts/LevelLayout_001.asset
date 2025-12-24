@@ -121,7 +121,7 @@ MonoBehaviour:
     level: 1
   - x: 2
     y: 4
-    tileTypeId: 1
+    tileTypeId: 2
     level: 1
   - x: 3
     y: 4
@@ -142,6 +142,10 @@ MonoBehaviour:
   - x: 1
     y: 5
     tileTypeId: 3
+    level: 1
+  - x: 2
+    y: 5
+    tileTypeId: 2
     level: 1
   - x: 3
     y: 5
