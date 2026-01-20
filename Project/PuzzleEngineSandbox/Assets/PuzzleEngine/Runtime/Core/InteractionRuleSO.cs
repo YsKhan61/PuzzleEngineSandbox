@@ -20,7 +20,8 @@ namespace PuzzleEngine.Runtime.Core
     {
         OnlySelectedPair,       // only the chosen pair is merged
         SelectedPairAndNeighbors, // chosen pair + its neighbours get a single pass
-        GlobalCascade           // run full-board simulation (your current behaviour)
+        GlobalCascade,          // run full-board simulation
+        GlobalMatchingPairs     // applies the merge result of the selected pair to all tiles of those source types on the board.
     }
     
     [CreateAssetMenu(

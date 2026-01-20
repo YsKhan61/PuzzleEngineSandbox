@@ -115,6 +115,12 @@ namespace PuzzleEngine.Runtime.Core
                 RefreshHighlight();
                 return;
             }
+            
+            var grid = puzzleManager.Grid;
+            var tileA = grid.Get(first.x, first.y);
+            var tileB = grid.Get(second.x, second.y);
+            int originalTypeA = tileA.TileTypeId;
+            int originalTypeB = tileB.TileTypeId;
 
             Debug.Log($"[GridClickController] Second selection: {second.x},{second.y}. Applying rule...");
 
@@ -122,7 +128,7 @@ namespace PuzzleEngine.Runtime.Core
                 first.x, first.y,
                 second.x, second.y);
 
-            ApplyCascade(first, second, changed);
+            ApplyCascade(first, second, changed, originalTypeA, originalTypeB);
 
             // Clear selection after a valid interaction
             _firstSelection = null;
@@ -142,12 +148,12 @@ namespace PuzzleEngine.Runtime.Core
 
         // -------------- Cascade behaviour --------------
 
-        private void ApplyCascade(Vector2Int first, Vector2Int second, bool changed)
+        private void ApplyCascade(Vector2Int first, Vector2Int second, bool changed, int originalTypeA, int originalTypeB)
         {
-            if (!changed || puzzleManager == null)
+            if (!changed || !puzzleManager)
                 return;
 
-            if (interactionRule == null)
+            if (!interactionRule)
             {
                 // Backwards-compatible default: single simulation step
                 puzzleManager.StepSimulation();
@@ -167,6 +173,17 @@ namespace PuzzleEngine.Runtime.Core
 
                 case CascadeMode.GlobalCascade:
                     puzzleManager.RunUntilStable();
+                    break;
+                
+                case CascadeMode.GlobalMatchingPairs:
+                    if (puzzleManager.Grid != null && puzzleManager.RuleEngine != null)
+                    {
+                        Simulation.CascadeUtility.ApplyGlobalMatchingPairs(
+                            puzzleManager.Grid,
+                            puzzleManager.RuleEngine,
+                            originalTypeA,
+                            originalTypeB);
+                    }
                     break;
             }
         }
