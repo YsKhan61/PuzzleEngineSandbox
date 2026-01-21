@@ -2,6 +2,7 @@
 using PuzzleEngine.Runtime.View;
 using UnityEngine.Serialization;
 using PuzzleEngine.Runtime.Simulation;
+using PuzzleEngine.Runtime.Goals;
 
 namespace PuzzleEngine.Runtime.Core
 {
@@ -116,20 +117,6 @@ namespace PuzzleEngine.Runtime.Core
                 RefreshHighlight();
                 return;
             }
-
-            var grid = puzzleManager.Grid;
-            if (grid == null)
-            {
-                _firstSelection = null;
-                RefreshHighlight();
-                return;
-            }
-
-            // Capture original tile types BEFORE applying the rule
-            var tileA = grid.Get(first.x, first.y);
-            var tileB = grid.Get(second.x, second.y);
-            int originalTypeA = tileA.TileTypeId;
-            int originalTypeB = tileB.TileTypeId;
 
             var grid = puzzleManager.Grid;
             if (grid == null)
