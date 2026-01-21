@@ -1,4 +1,5 @@
 using System;
+using PuzzleEngine.Runtime.Goals;
 using PuzzleEngine.Runtime.Rules;
 using PuzzleEngine.Runtime.Simulation;
 using UnityEngine;
@@ -29,6 +30,14 @@ namespace PuzzleEngine.Runtime.Core
 
         [Tooltip("If true, will auto-load the default layout on startup/initialization.")]
         [SerializeField] private bool autoLoadDefaultLayout = true;
+        
+        [Header("Goals")]
+        [Tooltip("Optional set of goals that define when the level is considered complete.")]
+        [SerializeField] private LevelGoalsSO levelGoals;
+
+        /// <summary>Runtime goal evaluator for the current level, if any.</summary>
+        public GoalEvaluator GoalEvaluator { get; private set; }
+
 
         /// <summary>Runtime grid model – single source of truth for tiles.</summary>
         public GridModel Grid { get; private set; }
@@ -70,7 +79,7 @@ namespace PuzzleEngine.Runtime.Core
         /// Shared initialization entry point for both runtime and editor tools.
         /// Safe to call multiple times; will only rebuild when needed.
         /// </summary>
-        public void EnsureInitialized(bool applyDefaultLayout = true)
+        public void EnsureInitialized(bool overrideDefaultLayout = true)
         {
             EnsureGridConfig();
 
@@ -97,23 +106,34 @@ namespace PuzzleEngine.Runtime.Core
                 InitializeRules();
             }
 
+            // Goals: ensure evaluator exists when we have a grid and config
+            if (levelGoals && 
+                Grid != null && 
+                GoalEvaluator == null)
+            {
+                GoalEvaluator = new GoalEvaluator(levelGoals);
+                GoalEvaluator.Evaluate(Grid);
+            }
+
             // Optionally load default layout
-            if (applyDefaultLayout &&
-                autoLoadDefaultLayout &&
-                defaultLayout &&
+            if (overrideDefaultLayout && 
+                autoLoadDefaultLayout && 
+                defaultLayout && 
                 Grid != null)
             {
                 defaultLayout.ApplyToGrid(Grid);
                 gridRebuilt = true;
+
+                // after changing grid layout, re-evaluate goals
+                if (GoalEvaluator != null)
+                    GoalEvaluator.Evaluate(Grid);
             }
 
-            // Notify listeners if we have a valid grid (and especially if we rebuilt it)
             if (Grid != null && gridRebuilt)
             {
                 RaiseGridChanged();
             }
         }
-
 
         /// <summary>
         /// Ensures we have some GridConfigSO assigned; creates an in-memory default otherwise.
@@ -312,11 +332,13 @@ namespace PuzzleEngine.Runtime.Core
         /// </summary>
         public void LoadLayout(LevelLayoutSO layout)
         {
-            if (layout == null)
+            if (!layout)
             {
                 Debug.LogWarning("[PuzzleManager] LoadLayout called with null layout.", this);
                 return;
             }
+
+            EnsureInitialized();
 
             if (Grid == null)
             {
@@ -325,7 +347,9 @@ namespace PuzzleEngine.Runtime.Core
             }
 
             layout.ApplyToGrid(Grid);
-            RaiseGridChanged();
+
+            // NEW: update goals based on new layout
+            GoalEvaluator?.Evaluate(Grid);
         }
 
         #endregion

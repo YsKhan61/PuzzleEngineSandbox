@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PuzzleEngine.Runtime.Simulation;
+using UnityEngine;
 using PuzzleEngine.Runtime.View;
 using UnityEngine.Serialization;
 
@@ -15,7 +16,7 @@ namespace PuzzleEngine.Runtime.Core
         [Header("References")]
         [SerializeField] private PuzzleManager puzzleManager;
         [SerializeField] private GridView gridView;
-        [FormerlySerializedAs("interactionRule")] 
+        [FormerlySerializedAs("interactionRule")]
         [SerializeField] private InteractionRuleSO interactionRule;
 
         [Header("Grid Mapping")]
@@ -107,7 +108,7 @@ namespace PuzzleEngine.Runtime.Core
             {
                 Debug.Log("[GridClickController] Pair not allowed by InteractionRule. Showing invalid feedback.");
 
-                // NEW: visual feedback on invalid second click
+                // Visual feedback on invalid second click
                 if (gridView != null)
                     gridView.ShowInvalidSelection(second);
 
@@ -117,6 +118,20 @@ namespace PuzzleEngine.Runtime.Core
             }
             
             var grid = puzzleManager.Grid;
+            var tileA = grid.Get(first.x, first.y);
+            var tileB = grid.Get(second.x, second.y);
+            int originalTypeA = tileA.TileTypeId;
+            int originalTypeB = tileB.TileTypeId;
+
+            var grid = puzzleManager.Grid;
+            if (grid == null)
+            {
+                _firstSelection = null;
+                RefreshHighlight();
+                return;
+            }
+
+            // Capture original tile types BEFORE applying the rule
             var tileA = grid.Get(first.x, first.y);
             var tileB = grid.Get(second.x, second.y);
             int originalTypeA = tileA.TileTypeId;

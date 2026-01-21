@@ -38,6 +38,9 @@ namespace PuzzleEngine.Runtime.Simulation
                 {
                     var cell = grid.Get(x, y);
 
+                    if (cell.IsEmpty)
+                        continue;
+
                     if (cell.TileTypeId == originalTypeA)
                     {
                         grid.Set(x, y, resultA);
