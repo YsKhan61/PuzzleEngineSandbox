@@ -1,7 +1,7 @@
-﻿using PuzzleEngine.Runtime.Simulation;
-using UnityEngine;
+﻿using UnityEngine;
 using PuzzleEngine.Runtime.View;
 using UnityEngine.Serialization;
+using PuzzleEngine.Runtime.Simulation;
 
 namespace PuzzleEngine.Runtime.Core
 {
@@ -116,12 +116,6 @@ namespace PuzzleEngine.Runtime.Core
                 RefreshHighlight();
                 return;
             }
-            
-            var grid = puzzleManager.Grid;
-            var tileA = grid.Get(first.x, first.y);
-            var tileB = grid.Get(second.x, second.y);
-            int originalTypeA = tileA.TileTypeId;
-            int originalTypeB = tileB.TileTypeId;
 
             var grid = puzzleManager.Grid;
             if (grid == null)
@@ -192,10 +186,10 @@ namespace PuzzleEngine.Runtime.Core
 
         private void ApplyCascade(Vector2Int first, Vector2Int second, bool changed, int originalTypeA, int originalTypeB)
         {
-            if (!changed || !puzzleManager)
+            if (!changed || puzzleManager == null)
                 return;
 
-            if (!interactionRule)
+            if (interactionRule == null)
             {
                 // Backwards-compatible default: single simulation step
                 puzzleManager.StepSimulation();
