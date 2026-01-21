@@ -490,6 +490,7 @@ MonoBehaviour:
   ruleSet: {fileID: 11400000, guid: 0c7fc4cfaea07854d8830d536124c44c, type: 2}
   defaultLayout: {fileID: 11400000, guid: 7481b69305961264cac6dd2c4ac4550e, type: 2}
   autoLoadDefaultLayout: 1
+  levelGoals: {fileID: 11400000, guid: 4b5a2821b6515d5458381443f4e13ece, type: 2}
 --- !u!114 &1162303599
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PuzzleEngine.Runtime.Simulation;
+using UnityEngine;
 using PuzzleEngine.Runtime.View;
 using UnityEngine.Serialization;
 
@@ -15,7 +16,7 @@ namespace PuzzleEngine.Runtime.Core
         [Header("References")]
         [SerializeField] private PuzzleManager puzzleManager;
         [SerializeField] private GridView gridView;
-        [FormerlySerializedAs("interactionRule")] 
+        [FormerlySerializedAs("interactionRule")]
         [SerializeField] private InteractionRuleSO interactionRule;
 
         [Header("Grid Mapping")]
@@ -107,7 +108,7 @@ namespace PuzzleEngine.Runtime.Core
             {
                 Debug.Log("[GridClickController] Pair not allowed by InteractionRule. Showing invalid feedback.");
 
-                // NEW: visual feedback on invalid second click
+                // Visual feedback on invalid second click
                 if (gridView != null)
                     gridView.ShowInvalidSelection(second);
 
@@ -116,13 +117,40 @@ namespace PuzzleEngine.Runtime.Core
                 return;
             }
 
+            var grid = puzzleManager.Grid;
+            if (grid == null)
+            {
+                _firstSelection = null;
+                RefreshHighlight();
+                return;
+            }
+
+            // Capture original tile types BEFORE applying the rule
+            var tileA = grid.Get(first.x, first.y);
+            var tileB = grid.Get(second.x, second.y);
+            int originalTypeA = tileA.TileTypeId;
+            int originalTypeB = tileB.TileTypeId;
+
             Debug.Log($"[GridClickController] Second selection: {second.x},{second.y}. Applying rule...");
 
             bool changed = puzzleManager.TryApplyRuleBetween(
                 first.x, first.y,
                 second.x, second.y);
 
-            ApplyCascade(first, second, changed);
+            // Cascade using original types (for global-matching mode, etc.)
+            ApplyCascade(first, second, changed, originalTypeA, originalTypeB);
+
+            // Re-evaluate goals after all board changes
+            if (puzzleManager.GoalEvaluator != null && puzzleManager.Grid != null)
+            {
+                puzzleManager.GoalEvaluator.Evaluate(puzzleManager.Grid);
+
+                if (puzzleManager.GoalEvaluator.AllComplete)
+                {
+                    Debug.Log("[GridClickController] Level goals complete! 🎉");
+                    // TODO: hook into win UI / level flow here.
+                }
+            }
 
             // Clear selection after a valid interaction
             _firstSelection = null;
@@ -142,7 +170,7 @@ namespace PuzzleEngine.Runtime.Core
 
         // -------------- Cascade behaviour --------------
 
-        private void ApplyCascade(Vector2Int first, Vector2Int second, bool changed)
+        private void ApplyCascade(Vector2Int first, Vector2Int second, bool changed, int originalTypeA, int originalTypeB)
         {
             if (!changed || puzzleManager == null)
                 return;
@@ -167,6 +195,17 @@ namespace PuzzleEngine.Runtime.Core
 
                 case CascadeMode.GlobalCascade:
                     puzzleManager.RunUntilStable();
+                    break;
+
+                case CascadeMode.GlobalMatchingPairs:
+                    if (puzzleManager.Grid != null && puzzleManager.RuleEngine != null)
+                    {
+                        CascadeUtility.ApplyGlobalMatchingPairs(
+                            puzzleManager.Grid,
+                            puzzleManager.RuleEngine,
+                            originalTypeA,
+                            originalTypeB);
+                    }
                     break;
             }
         }
