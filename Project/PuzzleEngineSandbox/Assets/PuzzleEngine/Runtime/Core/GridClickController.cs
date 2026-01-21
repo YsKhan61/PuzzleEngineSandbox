@@ -2,6 +2,7 @@
 using PuzzleEngine.Runtime.View;
 using UnityEngine.Serialization;
 using PuzzleEngine.Runtime.Simulation;
+using PuzzleEngine.Runtime.Goals;
 
 namespace PuzzleEngine.Runtime.Core
 {
