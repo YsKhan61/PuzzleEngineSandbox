@@ -11,8 +11,9 @@ namespace PuzzleEngine.Runtime.Simulation
         /// After a successful interaction between two tile types (originalTypeA, originalTypeB),
         /// apply the same rule globally to all tiles on the board that match those original types.
         ///
-        /// For example, if Fire (1) + Water (2) => Steam (3,3),
-        /// this will convert every Fire or Water tile on the grid into Steam.
+        /// Example:
+        ///   Fire (1) + Water (2) => Steam (3,3)
+        ///   This will convert every Fire or Water tile on the grid into Steam.
         /// </summary>
         public static void ApplyGlobalMatchingPairs(
             GridModel grid,

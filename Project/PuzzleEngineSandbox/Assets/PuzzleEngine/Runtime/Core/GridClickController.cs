@@ -137,13 +137,40 @@ namespace PuzzleEngine.Runtime.Core
             int originalTypeA = tileA.TileTypeId;
             int originalTypeB = tileB.TileTypeId;
 
+            var grid = puzzleManager.Grid;
+            if (grid == null)
+            {
+                _firstSelection = null;
+                RefreshHighlight();
+                return;
+            }
+
+            // Capture original tile types BEFORE applying the rule
+            var tileA = grid.Get(first.x, first.y);
+            var tileB = grid.Get(second.x, second.y);
+            int originalTypeA = tileA.TileTypeId;
+            int originalTypeB = tileB.TileTypeId;
+
             Debug.Log($"[GridClickController] Second selection: {second.x},{second.y}. Applying rule...");
 
             bool changed = puzzleManager.TryApplyRuleBetween(
                 first.x, first.y,
                 second.x, second.y);
 
+            // Cascade using original types (for global-matching mode, etc.)
             ApplyCascade(first, second, changed, originalTypeA, originalTypeB);
+
+            // Re-evaluate goals after all board changes
+            if (puzzleManager.GoalEvaluator != null && puzzleManager.Grid != null)
+            {
+                puzzleManager.GoalEvaluator.Evaluate(puzzleManager.Grid);
+
+                if (puzzleManager.GoalEvaluator.AllComplete)
+                {
+                    Debug.Log("[GridClickController] Level goals complete! 🎉");
+                    // TODO: hook into win UI / level flow here.
+                }
+            }
 
             // Clear selection after a valid interaction
             _firstSelection = null;
@@ -189,11 +216,11 @@ namespace PuzzleEngine.Runtime.Core
                 case CascadeMode.GlobalCascade:
                     puzzleManager.RunUntilStable();
                     break;
-                
+
                 case CascadeMode.GlobalMatchingPairs:
                     if (puzzleManager.Grid != null && puzzleManager.RuleEngine != null)
                     {
-                        Simulation.CascadeUtility.ApplyGlobalMatchingPairs(
+                        CascadeUtility.ApplyGlobalMatchingPairs(
                             puzzleManager.Grid,
                             puzzleManager.RuleEngine,
                             originalTypeA,
