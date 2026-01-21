@@ -38,7 +38,28 @@ namespace PuzzleEngine.Runtime.Core
         /// <summary>Runtime goal evaluator for the current level, if any.</summary>
         public GoalEvaluator GoalEvaluator { get; private set; }
 
+        [Header("Session")]
+        [Tooltip("How many moves the player starts with. Set to 0 for unlimited moves.")]
+        [SerializeField] private int startingMoves = 20;
 
+        /// <summary>How many moves remain in this level.</summary>
+        public int RemainingMoves { get; private set; }
+
+        /// <summary>True when all goals are complete.</summary>
+        public bool LevelCompleted { get; private set; }
+
+        /// <summary>True when the player has run out of moves before completing goals.</summary>
+        public bool LevelFailed { get; private set; }
+
+        /// <summary>Raised whenever RemainingMoves or win/lose state changes.</summary>
+        public event Action SessionChanged;
+
+        /// <summary>Raised once when the level is completed.</summary>
+        public event Action LevelCompletedEvent;
+
+        /// <summary>Raised once when the level is failed.</summary>
+        public event Action LevelFailedEvent;
+        
         /// <summary>Runtime grid model – single source of truth for tiles.</summary>
         public GridModel Grid { get; private set; }
 
@@ -57,6 +78,7 @@ namespace PuzzleEngine.Runtime.Core
         {
             // Runtime entry point
             EnsureInitialized();
+            ResetSessionState();
         }
 
 #if UNITY_EDITOR
@@ -107,9 +129,7 @@ namespace PuzzleEngine.Runtime.Core
             }
 
             // Goals: ensure evaluator exists when we have a grid and config
-            if (levelGoals && 
-                Grid != null && 
-                GoalEvaluator == null)
+            if (levelGoals != null && Grid != null && GoalEvaluator == null)
             {
                 GoalEvaluator = new GoalEvaluator(levelGoals);
                 GoalEvaluator.Evaluate(Grid);
@@ -124,7 +144,6 @@ namespace PuzzleEngine.Runtime.Core
                 defaultLayout.ApplyToGrid(Grid);
                 gridRebuilt = true;
 
-                // after changing grid layout, re-evaluate goals
                 if (GoalEvaluator != null)
                     GoalEvaluator.Evaluate(Grid);
             }
@@ -348,10 +367,72 @@ namespace PuzzleEngine.Runtime.Core
 
             layout.ApplyToGrid(Grid);
 
-            // NEW: update goals based on new layout
-            GoalEvaluator?.Evaluate(Grid);
+            if (GoalEvaluator != null)
+                GoalEvaluator.Evaluate(Grid);
+        }
+        
+        /// <summary>
+        /// Resets moves and win/lose flags for a fresh attempt of this level.
+        /// </summary>
+        public void ResetSessionState()
+        {
+            LevelCompleted = false;
+            LevelFailed = false;
+            RemainingMoves = Mathf.Max(0, startingMoves);
+
+            if (GoalEvaluator != null && Grid != null)
+                GoalEvaluator.Evaluate(Grid);
+
+            SessionChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Should be called after a successful player interaction
+        /// that changed the grid. Decrements moves, re-evaluates goals,
+        /// and fires win/lose events when appropriate.
+        /// </summary>
+        public void RegisterPlayerMove()
+        {
+            if (LevelCompleted || LevelFailed)
+                return;
+
+            // Consume a move if move economy is enabled
+            if (startingMoves > 0)
+            {
+                RemainingMoves = Mathf.Max(0, RemainingMoves - 1);
+            }
+
+            if (GoalEvaluator != null && Grid != null)
+            {
+                GoalEvaluator.Evaluate(Grid);
+            }
+
+            // Check win
+            if (GoalEvaluator != null && GoalEvaluator.AllComplete)
+            {
+                LevelCompleted = true;
+                LevelFailed = false;
+
+                LevelCompletedEvent?.Invoke();
+                SessionChanged?.Invoke();
+                return;
+            }
+
+            // Check lose (only if we use moves)
+            if (startingMoves > 0 && RemainingMoves <= 0)
+            {
+                LevelFailed = true;
+                LevelCompleted = false;
+
+                LevelFailedEvent?.Invoke();
+                SessionChanged?.Invoke();
+                return;
+            }
+
+            // Normal move update
+            SessionChanged?.Invoke();
+        }
+        
         #endregion
 
 #if UNITY_EDITOR

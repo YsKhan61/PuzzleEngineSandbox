@@ -2,7 +2,6 @@
 using PuzzleEngine.Runtime.View;
 using UnityEngine.Serialization;
 using PuzzleEngine.Runtime.Simulation;
-using PuzzleEngine.Runtime.Goals;
 
 namespace PuzzleEngine.Runtime.Core
 {
@@ -10,7 +9,7 @@ namespace PuzzleEngine.Runtime.Core
     /// Minimal runtime input driver for the puzzle grid.
     /// Lets you click two cells and applies a rule between them
     /// using PuzzleManager.TryApplyRuleBetween, then triggers cascade
-    /// according to InteractionRuleSO.
+    /// according to InteractionRuleSO and session rules.
     /// </summary>
     public class GridClickController : MonoBehaviour
     {
@@ -47,6 +46,10 @@ namespace PuzzleEngine.Runtime.Core
         private void Update()
         {
             if (puzzleManager == null || puzzleManager.Grid == null)
+                return;
+
+            // Stop accepting input once level is finished
+            if (puzzleManager.LevelCompleted || puzzleManager.LevelFailed)
                 return;
 
             if (Input.GetMouseButtonDown(0))
@@ -109,11 +112,9 @@ namespace PuzzleEngine.Runtime.Core
             {
                 Debug.Log("[GridClickController] Pair not allowed by InteractionRule. Showing invalid feedback.");
 
-                // Visual feedback on invalid second click
                 if (gridView != null)
                     gridView.ShowInvalidSelection(second);
 
-                // Keep the original first selection as anchor
                 RefreshHighlight();
                 return;
             }
@@ -141,19 +142,12 @@ namespace PuzzleEngine.Runtime.Core
             // Cascade using original types (for global-matching mode, etc.)
             ApplyCascade(first, second, changed, originalTypeA, originalTypeB);
 
-            // Re-evaluate goals after all board changes
-            if (puzzleManager.GoalEvaluator != null && puzzleManager.Grid != null)
+            // Register a move only if the grid actually changed
+            if (changed)
             {
-                puzzleManager.GoalEvaluator.Evaluate(puzzleManager.Grid);
-
-                if (puzzleManager.GoalEvaluator.AllComplete)
-                {
-                    Debug.Log("[GridClickController] Level goals complete! 🎉");
-                    // TODO: hook into win UI / level flow here.
-                }
+                puzzleManager.RegisterPlayerMove();
             }
 
-            // Clear selection after a valid interaction
             _firstSelection = null;
             RefreshHighlight();
         }
